@@ -2,15 +2,17 @@
 
 @section('content')
     <div class="container">
-        <h1>Daftar Barang Keluar</h1>
+        <h3 class="text-center text-bold">Daftar Barang Keluar</h3>
         <a href="{{ route('barang_keluar.create') }}" class="btn btn-primary mb-3">Tambah Barang Keluar</a>
 
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
+        @elseif(session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
 
-        <table class="table table-bordered">
-            <thead>
+        <table class="table table-dark table-hover">
+            <thead class="text-center">
                 <tr>
                     <th>No Barang Keluar</th>
                     <th>Kode Barang</th>
@@ -20,24 +22,106 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="text-center">
                 @foreach ($barangKeluar as $item)
-                    <tr>
+                    <tr class="table-light">
                         <td>{{ $item->no_barang_keluar }}</td>
                         <td>{{ $item->kode_barang }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->destination }}</td>
                         <td>{{ $item->tanggal_keluar }}</td>
                         <td>
-                            <a href="{{ route('barang_keluar.edit', $item->id) }}" class="btn btn-warning">Edit</a>
-                            <form action="{{ route('barang_keluar.destroy', $item->id) }}" method="POST"
-                                style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Hapus</button>
-                            </form>
+                            <!-- Edit Button (Trigger Modal) -->
+                            <button class="btn btn-warning btn-sm" data-toggle="modal"
+                                data-target="#editModal{{ $item->id }}">Edit</button>
+
+                            <!-- Delete Button (Trigger Modal) -->
+                            <button class="btn btn-danger btn-sm" data-toggle="modal"
+                                data-target="#deleteModal{{ $item->id }}">Delete</button>
                         </td>
                     </tr>
+
+                    <!-- Edit Modal -->
+                    <div class="modal fade" id="editModal{{ $item->id }}" tabindex="-1" role="dialog"
+                        aria-labelledby="editModalLabel{{ $item->id }}" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editModalLabel{{ $item->id }}">Edit Barang Keluar</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form action="{{ route('barang_keluar.update', $item->id) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="no_barang_keluar">No Barang Keluar</label>
+                                            <input type="text" class="form-control" id="no_barang_keluar"
+                                                name="no_barang_keluar" value="{{ $item->no_barang_keluar }}" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="kode_barang">Kode Barang</label>
+                                            <input type="text" class="form-control" id="kode_barang" name="kode_barang"
+                                                value="{{ $item->kode_barang }}" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="quantity">Quantity</label>
+                                            <input type="number" class="form-control" id="quantity" name="quantity"
+                                                value="{{ $item->quantity }}" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="destination">Tujuan</label>
+                                            <input type="text" class="form-control" id="destination" name="destination"
+                                                value="{{ $item->destination }}" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="tanggal_keluar">Tanggal Keluar</label>
+                                            <input type="date" class="form-control" id="tanggal_keluar"
+                                                name="tanggal_keluar" value="{{ $item->tanggal_keluar }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delete Modal -->
+                    <div class="modal fade" id="deleteModal{{ $item->id }}" tabindex="-1" role="dialog"
+                        aria-labelledby="deleteModalLabel{{ $item->id }}" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel{{ $item->id }}">Hapus Barang Keluar
+                                    </h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form action="{{ route('barang_keluar.destroy', $item->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <div class="modal-body">
+                                        Apakah Anda yakin ingin menghapus barang keluar ini?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-danger">Hapus</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 @endforeach
             </tbody>
         </table>

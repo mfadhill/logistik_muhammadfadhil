@@ -20,7 +20,6 @@ return new class extends Migration
             $table->date('tanggal_masuk');
             $table->timestamps();
 
-            // Relasi dengan tabel barang
             $table->foreign('kode_barang')->references('kode_barang')->on('barang')->onDelete('cascade');
         });
     }

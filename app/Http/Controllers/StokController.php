@@ -30,7 +30,7 @@ class StokController extends Controller
                 $totalKeluar += $keluar->quantity;
             }
 
-            $stokTersedia = $item->stok + $totalMasuk - $totalKeluar;
+            $stokTersedia = $item->stok;
 
             $stokBarang[] = [
                 'kode_barang' => $item->kode_barang,
@@ -41,7 +41,7 @@ class StokController extends Controller
                 'barang_keluar' => $barangKeluar,
             ];
         }
-
+        // dd($stokBarang);
         return view('stok_barang.index', compact('stokBarang'));
     }
 

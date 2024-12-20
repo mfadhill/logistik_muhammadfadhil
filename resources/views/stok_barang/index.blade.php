@@ -3,8 +3,8 @@
 @section('content')
     <div class="container">
         <h1 class="my-4">Daftar Stok Barang</h1>
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="thead-dark">
+        <table class="table table-hover table-dark">
+            <thead class="text-center">
                 <tr>
                     <th>No</th>
                     <th>Kode Barang</th>
@@ -16,9 +16,9 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="text-center">
                 @foreach ($stokBarang as $index => $item)
-                    <tr>
+                    <tr class="table-light">
                         <td>{{ $index + 1 }}</td>
                         <td>{{ $item['kode_barang'] }}</td>
                         <td>
