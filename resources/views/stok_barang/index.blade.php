@@ -2,7 +2,12 @@
 
 @section('content')
     <div class="container">
-        <h1 class="my-4">Daftar Stok Barang</h1>
+        <h3 class="my-4 mb-10 text-bold text-center">Daftar Stok Barang</h3>
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @elseif(session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
         <table class="table table-hover table-dark">
             <thead class="text-center">
                 <tr>
@@ -35,7 +40,6 @@
                         <td>{{ $item['quantity_keluar'] }}</td>
                         <td>{{ $item['stok_tersedia'] }}</td>
                         <td>
-                            <!-- Button Hapus -->
                             <form action="{{ route('stok.delete', $item['kode_barang']) }}" method="POST"
                                 onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                 @csrf
