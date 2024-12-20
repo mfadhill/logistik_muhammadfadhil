@@ -6,17 +6,12 @@
         <form action="{{ route('barang_masuk.store') }}" method="POST">
             @csrf
             <div class="form-group">
-                <label for="barang_id">Nama Barang</label>
-                <select name="barang_id" class="form-control" required>
-                    @foreach ($barang as $barangItem)
-                        <option value="{{ $barangItem->id }}">{{ $barangItem->nama_barang }} (Kode:
-                            {{ $barangItem->kode_barang }})</option>
-                    @endforeach
-                </select>
+                <label for="no_barang_masuk">No Barang Masuk</label>
+                <input type="text" name="no_barang_masuk" class="form-control" required>
             </div>
             <div class="form-group">
-                <label for="no_barang_masuk">No. Barang Masuk</label>
-                <input type="text" name="no_barang_masuk" class="form-control" required>
+                <label for="kode_barang">Kode Barang</label>
+                <input type="text" name="kode_barang" class="form-control" required>
             </div>
             <div class="form-group">
                 <label for="quantity">Quantity</label>

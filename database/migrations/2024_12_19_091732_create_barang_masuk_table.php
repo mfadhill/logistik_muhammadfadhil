@@ -13,12 +13,15 @@ return new class extends Migration
     {
         Schema::create('barang_masuk', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('barang_id')->constrained('barang')->onDelete('cascade');
             $table->string('no_barang_masuk')->unique();
+            $table->string('kode_barang');
             $table->integer('quantity');
             $table->string('origin');
             $table->date('tanggal_masuk');
             $table->timestamps();
+
+            // Relasi dengan tabel barang
+            $table->foreign('kode_barang')->references('kode_barang')->on('barang')->onDelete('cascade');
         });
     }
 

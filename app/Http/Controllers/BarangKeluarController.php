@@ -2,54 +2,58 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Barang;
 use App\Models\BarangKeluar;
+use App\Models\BarangMasuk;
+use App\Models\Barang;
 use Illuminate\Http\Request;
 
 class BarangKeluarController extends Controller
 {
-    // Menampilkan daftar barang keluar
+    // Menampilkan daftar barang keluar (optional)
     public function index()
     {
-        // Mengambil data barang keluar beserta data barang yang terkait
-        $barangKeluar = BarangKeluar::with('barang')->get();
-        return view('barang_keluar.index', compact('barangKeluar'));
+        $barangKeluar = BarangKeluar::all(); // Ambil semua data barang keluar
+        return view('barang_keluar.index', compact('barangKeluar')); // Ganti dengan view yang sesuai
     }
 
-    // Menampilkan form untuk tambah barang keluar
+    // Menampilkan form untuk membuat barang keluar baru
     public function create()
     {
-        // Mengambil semua data barang untuk dropdown
-        $barang = Barang::all();
-        return view('barang_keluar.create', compact('barang'));
+        $barangMasuk = BarangMasuk::with('barang')->get(); // Ambil data barang masuk beserta barang terkait
+        return view('barang_keluar.create', compact('barangMasuk'));
     }
 
-    // Menyimpan data barang keluar
     public function store(Request $request)
     {
-        // Validasi input
-        $validated = $request->validate([
-            'barang_id' => 'required|exists:barang,id',  // Memastikan barang_id ada di tabel barang
-            'no_barang_keluar' => 'required|unique:barang_keluar,no_barang_keluar',
+        // Validasi data
+        $validatedData = $request->validate([
+            'no_barang_keluar' => 'required|unique:barang_keluar',
+            'kode_barang' => 'required',
             'quantity' => 'required|integer|min:1',
-            'destination' => 'required|string',
+            'destination' => 'required',
             'tanggal_keluar' => 'required|date',
         ]);
 
-        // Menyimpan data barang keluar
-        BarangKeluar::create([
-            'barang_id' => $request->barang_id,
-            'no_barang_keluar' => $request->no_barang_keluar,
-            'quantity' => $request->quantity,
-            'destination' => $request->destination,
-            'tanggal_keluar' => $request->tanggal_keluar,
-        ]);
+        // Cek apakah barang dengan kode_barang sudah ada di tabel barang
+        $barang = Barang::where('kode_barang', $validatedData['kode_barang'])->first();
 
-        // Update stok barang
-        $barang = Barang::find($request->barang_id);
-        $barang->stok -= $request->quantity;
+        // Jika barang tidak ada di tabel barang, maka redirect dengan pesan error
+        if (!$barang) {
+            return redirect()->route('barang_keluar.index')->with('error', 'Barang dengan kode tersebut tidak ditemukan.');
+        }
+
+        // Cek apakah stok barang cukup untuk keluar
+        if ($barang->stok < $validatedData['quantity']) {
+            return redirect()->route('barang_keluar.index')->with('error', 'Stok barang tidak cukup.');
+        }
+
+        // Simpan data barang keluar
+        $barangKeluar = BarangKeluar::create($validatedData);
+
+        // Update stok di tabel barang
+        $barang->stok -= $validatedData['quantity'];
         $barang->save();
 
-        return redirect()->route('barang_keluar.index')->with('success', 'Barang Keluar Berhasil Ditambahkan');
+        return redirect()->route('barang_keluar.index')->with('success', 'Barang berhasil keluar.');
     }
 }
