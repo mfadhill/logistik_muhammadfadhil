@@ -12,7 +12,7 @@ class BarangKeluarController extends Controller
     public function index()
     {
         $barangKeluar = BarangKeluar::all();
-        return view('barang_keluar.index', compact('barangKeluar')); // Ganti dengan view yang sesuai
+        return view('barang_keluar.index', compact('barangKeluar'));
     }
 
     public function create()
@@ -23,7 +23,6 @@ class BarangKeluarController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi data
         $validatedData = $request->validate([
             'no_barang_keluar' => 'required|unique:barang_keluar',
             'kode_barang' => 'required',
@@ -36,7 +35,7 @@ class BarangKeluarController extends Controller
 
         if (!$barang) {
             return redirect()->route('barang_keluar.index')->with('error', 'Barang dengan kode tersebut tidak ditemukan.');
-        }
+        }   
 
         if ($barang->stok < $validatedData['quantity']) {
             return redirect()->route('barang_keluar.index')->with('error', 'Stok barang tidak cukup.');

@@ -48,7 +48,6 @@ class BarangMasukController extends Controller
 
     public function edit($id)
     {
-        // Ambil data barang masuk berdasarkan ID
         $barangMasuk = BarangMasuk::findOrFail($id);
 
         return view('barang_masuk.edit', compact('barangMasuk'));
@@ -56,7 +55,6 @@ class BarangMasukController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Validasi data yang diupdate
         $validatedData = $request->validate([
             'no_barang_masuk' => 'required|unique:barang_masuk,no_barang_masuk,' . $id,
             'kode_barang' => 'required',
@@ -65,18 +63,13 @@ class BarangMasukController extends Controller
             'tanggal_masuk' => 'required|date',
         ]);
 
-        // Cari barang masuk yang akan diupdate
         $barangMasuk = BarangMasuk::findOrFail($id);
 
-        // Cari barang berdasarkan kode_barang
         $barang = Barang::where('kode_barang', $validatedData['kode_barang'])->first();
 
-        // Update data barang masuk
         $barangMasuk->update($validatedData);
 
-        // Update stok barang
         if ($barang) {
-            // Update stok berdasarkan perubahan quantity
             $barang->stok += $validatedData['quantity'] - $barangMasuk->quantity;
             $barang->save();
         }
@@ -86,19 +79,15 @@ class BarangMasukController extends Controller
 
     public function destroy($id)
     {
-        // Cari data barang masuk berdasarkan ID
         $barangMasuk = BarangMasuk::findOrFail($id);
 
-        // Ambil data barang terkait
         $barang = Barang::where('kode_barang', $barangMasuk->kode_barang)->first();
 
         if ($barang) {
-            // Kurangi stok barang sesuai dengan quantity barang masuk yang dihapus
             $barang->stok -= $barangMasuk->quantity;
             $barang->save();
         }
 
-        // Hapus data barang masuk
         $barangMasuk->delete();
 
         return redirect()->route('barang_masuk.index')->with('success', 'Barang berhasil dihapus.');
